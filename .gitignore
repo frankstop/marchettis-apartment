@@ -1,7 +1,3 @@
-# ── API Keys ──────────────────────────────────────────────────────
-# Your local Geoapify key — NEVER commit this
-js/config.local.js
-
 # ── OS / Editor ───────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
