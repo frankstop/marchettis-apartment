@@ -474,6 +474,29 @@ input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; transform: 
   line-height: 1.6;
 }
 
+/* ── Drop-pin Hint ───────────────────────────────────────── */
+#drop-pin-hint {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: rgba(10, 15, 30, 0.88);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 12px;
+  color: var(--text-1);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: opacity 0.5s ease;
+  white-space: nowrap;
+}
+#drop-pin-hint.hidden { opacity: 0; }
+
 /* ── Layer Controls ─────────────────────────────────────── */
 #layer-controls {
   position: absolute;

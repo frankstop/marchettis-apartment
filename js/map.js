@@ -7,8 +7,9 @@ const MapController = {
   map: null,
   locationMarker: null,
   isochroneLayer: null,
-  poiLayers: {},      // catId -> L.LayerGroup
+  poiLayers: {},       // catId -> L.LayerGroup
   layerVisibility: {}, // catId -> bool
+  onDropPin: null,     // callback(lat, lon) set by app.js
 
   /** Initialize the Leaflet map. */
   init() {
@@ -29,9 +30,17 @@ const MapController = {
     L.control.zoom({ position: 'bottomright' }).addTo(this.map);
 
     // Initialize empty POI layer groups
-    CATEGORIES.forEach(cat => {
-      this.poiLayers[cat.id] = L.layerGroup().addTo(this.map);
-      this.layerVisibility[cat.id] = true;
+    var self = this;
+    CATEGORIES.forEach(function(cat) {
+      self.poiLayers[cat.id] = L.layerGroup().addTo(self.map);
+      self.layerVisibility[cat.id] = true;
+    });
+
+    // ── Drop-pin: click anywhere on the map ──────────────────
+    this.map.on('click', function(e) {
+      if (self.onDropPin) {
+        self.onDropPin(e.latlng.lat, e.latlng.lng);
+      }
     });
   },
 
@@ -41,16 +50,15 @@ const MapController = {
       this.map.removeLayer(this.locationMarker);
     }
 
-    // Custom pulsing marker
-    const icon = L.divIcon({
+    var icon = L.divIcon({
       className: '',
-      html: `<div class="location-marker"><div class="marker-dot"></div><div class="marker-pulse"></div></div>`,
+      html: '<div class="location-marker"><div class="marker-dot"></div><div class="marker-pulse"></div></div>',
       iconSize: [40, 40],
       iconAnchor: [20, 20],
     });
 
-    this.locationMarker = L.marker([lat, lon], { icon })
-      .bindPopup(`<div class="map-popup"><strong>${label}</strong></div>`, { maxWidth: 240 })
+    this.locationMarker = L.marker([lat, lon], { icon: icon })
+      .bindPopup('<div class="map-popup"><strong>' + label + '</strong></div>', { maxWidth: 260 })
       .addTo(this.map);
 
     this.map.flyTo([lat, lon], 14, { duration: 1.2, easeLinearity: 0.25 });
@@ -65,52 +73,51 @@ const MapController = {
     this.isochroneLayer = L.geoJSON(geojson, {
       style: {
         fillColor: '#6366f1',
-        fillOpacity: 0.12,
+        fillOpacity: 0.13,
         color: '#818cf8',
-        weight: 2,
+        weight: 2.5,
         dashArray: '6 4',
-        opacity: 0.8,
+        opacity: 0.85,
+        className: 'isochrone-path',
       },
     }).addTo(this.map);
 
-    // Add glow effect class to the SVG path
-    this.isochroneLayer.on('add', () => {
-      document.querySelectorAll('.leaflet-interactive').forEach(el => {
-        el.classList.add('isochrone-path');
-      });
-    });
-
     // Fit map to the isochrone bounds (with padding for panels)
-    const bounds = this.isochroneLayer.getBounds();
-    this.map.fitBounds(bounds, { paddingTopLeft: [320, 80], paddingBottomRight: [380, 40] });
+    var bounds = this.isochroneLayer.getBounds();
+    this.map.fitBounds(bounds, {
+      paddingTopLeft: [320, 80],
+      paddingBottomRight: [380, 40],
+    });
   },
 
   /** Render POI markers for all categories. */
   renderPOIs(poiLocations) {
-    // Clear existing POI layers
-    CATEGORIES.forEach(cat => {
-      this.poiLayers[cat.id].clearLayers();
+    var self = this;
+
+    CATEGORIES.forEach(function(cat) {
+      self.poiLayers[cat.id].clearLayers();
     });
 
-    CATEGORIES.forEach(cat => {
-      const pois = poiLocations[cat.id] || [];
-      // Limit to first 200 per category for performance
-      pois.slice(0, 200).forEach(poi => {
-        const marker = L.circleMarker([poi.lat, poi.lon], {
+    CATEGORIES.forEach(function(cat) {
+      var pois = poiLocations[cat.id] || [];
+      pois.slice(0, 200).forEach(function(poi) {
+        var marker = L.circleMarker([poi.lat, poi.lon], {
           radius: 5,
           fillColor: cat.color,
-          color: 'rgba(0,0,0,0.4)',
+          color: 'rgba(0,0,0,0.35)',
           weight: 1,
           opacity: 1,
           fillOpacity: 0.85,
         });
 
         marker.bindPopup(
-          `<div class="map-popup"><span style="color:${cat.color}">${cat.icon}</span> <strong>${poi.name}</strong><br><small>${poi.subId.replace(/_/g, ' ')}</small></div>`,
+          '<div class="map-popup"><span style="color:' + cat.color + '">' + cat.icon + '</span> ' +
+          '<strong>' + poi.name + '</strong><br>' +
+          '<small>' + poi.subId.replace(/_/g, ' ') + '</small></div>',
           { maxWidth: 200 }
         );
 
-        this.poiLayers[cat.id].addLayer(marker);
+        self.poiLayers[cat.id].addLayer(marker);
       });
     });
   },
@@ -131,8 +138,9 @@ const MapController = {
       this.map.removeLayer(this.isochroneLayer);
       this.isochroneLayer = null;
     }
-    CATEGORIES.forEach(cat => {
-      this.poiLayers[cat.id].clearLayers();
+    var self = this;
+    CATEGORIES.forEach(function(cat) {
+      self.poiLayers[cat.id].clearLayers();
     });
   },
 };

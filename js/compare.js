@@ -5,6 +5,7 @@
 
 const Compare = {
   modal: null,
+  _barChart: null,
 
   /** Open the full comparison modal. */
   show() {
@@ -114,11 +115,16 @@ const Compare = {
   },
 
   _buildBarChart(locations) {
+    // Destroy any previous chart to avoid Canvas reuse error
+    if (this._barChart) {
+      this._barChart.destroy();
+      this._barChart = null;
+    }
     const ctx = document.getElementById('compare-bar-chart').getContext('2d');
     const labels = CATEGORIES.map(c => c.label);
     const palette = ['#6366f1', '#22c55e', '#f59e0b', '#ec4899'];
 
-    new Chart(ctx, {
+    this._barChart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels,

@@ -48,6 +48,29 @@ const Geocoder = {
   },
 
   /**
+   * Reverse geocode coordinates to a formatted address.
+   * @param {number} lat
+   * @param {number} lon
+   * @returns {Promise<{lat, lon, address}>}
+   */
+  async reverseGeocode(lat, lon) {
+    const key = CONFIG.GEOAPIFY_API_KEY;
+    const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${key}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Reverse geocoding failed');
+    const data = await res.json();
+    if (!data.features || !data.features.length) {
+      return { lat, lon, address: `${lat.toFixed(5)}, ${lon.toFixed(5)}` };
+    }
+    const f = data.features[0];
+    return {
+      lat: f.properties.lat || lat,
+      lon: f.properties.lon || lon,
+      address: f.properties.formatted,
+    };
+  },
+
+  /**
    * Debounced autocomplete — calls callback after 300ms of silence.
    */
   debounceAutocomplete(text, callback) {

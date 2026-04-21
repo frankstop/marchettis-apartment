@@ -85,7 +85,22 @@ document.addEventListener('DOMContentLoaded', function() {
   UI.buildTravelModes();
   UI.buildWeightControls(AppState.weights);
 
-  // ── Search Input ──────────────────────────────────────────────
+  // ── Drop-pin: click on map to set location ────────────────────
+  MapController.onDropPin = async function(lat, lon) {
+    try {
+      UI.showLoading('Reverse geocoding…');
+      var result = await Geocoder.reverseGeocode(lat, lon);
+      UI.hideLoading();
+      selectLocation(result.address, result.lat || lat, result.lon || lon);
+      UI.toast('Pin dropped — click Analyze to score this location.', 'info');
+    } catch (err) {
+      UI.hideLoading();
+      // Fall back to raw coordinates if reverse geocode fails
+      selectLocation(lat.toFixed(5) + ', ' + lon.toFixed(5), lat, lon);
+    }
+  };
+
+
   var searchInput = document.getElementById('search-input');
   var dropdown    = document.getElementById('autocomplete-dropdown');
 
@@ -153,6 +168,8 @@ document.addEventListener('DOMContentLoaded', function() {
     MapController.setLocation(lat, lon, address);
     var overlay = document.getElementById('map-empty-overlay');
     if (overlay) overlay.classList.add('fading');
+    var hint = document.getElementById('drop-pin-hint');
+    if (hint) hint.classList.add('hidden');
   }
 
   // ── Travel Mode Pills ─────────────────────────────────────────
