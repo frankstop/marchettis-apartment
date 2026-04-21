@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marchetti's Apartment — Proximity Intelligence Platform</title>
+  <meta name="description" content="Evaluate housing locations based on what you can realistically access within your daily travel budget. Powered by real travel-time isochrones and live points-of-interest data.">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══ Header ══════════════════════════════════════════════ -->
+  <header id="app-header">
+    <div class="header-logo">
+      <div class="header-hex">⬡</div>
+      <div class="header-titles">
+        <h1>Marchetti's Apartment</h1>
+        <p>Proximity Intelligence Platform</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btn-compare" class="hidden" title="Compare saved locations">
+        📍 Compare (<span id="compare-count">0</span>)
+      </button>
+    </div>
+  </header>
+
+  <!-- ══ Main Layout ══════════════════════════════════════════ -->
+  <div id="main-layout">
+
+    <!-- ── Left Panel ─────────────────────────────────────── -->
+    <aside id="left-panel">
+
+      <!-- Search -->
+      <div class="panel-section">
+        <p class="section-label">Search Address</p>
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input
+            id="search-input"
+            type="text"
+            placeholder="e.g. 350 5th Ave, New York, NY"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <div id="autocomplete-dropdown" class="hidden"></div>
+        </div>
+      </div>
+
+      <!-- Travel Mode -->
+      <div class="panel-section">
+        <p class="section-label">Travel Mode</p>
+        <div id="mode-pills"></div>
+      </div>
+
+      <!-- Time Budget -->
+      <div class="panel-section">
+        <p class="section-label">Time Budget</p>
+        <div class="slider-row">
+          <input
+            type="range"
+            id="time-slider"
+            min="5" max="60" step="5" value="30"
+          >
+          <span id="time-display">30 min</span>
+        </div>
+      </div>
+
+      <!-- Category Weights -->
+      <div class="panel-section">
+        <p class="section-label">Lifestyle Priorities</p>
+        <div id="weight-controls"></div>
+      </div>
+
+      <!-- Analyze CTA -->
+      <button id="btn-analyze" class="btn-primary" disabled>
+        ⬡ &nbsp;Analyze Location
+      </button>
+
+    </aside>
+
+    <!-- ── Map Center ──────────────────────────────────────── -->
+    <div id="map-container">
+      <div id="map"></div>
+
+      <!-- Empty state -->
+      <div id="map-empty-overlay">
+        <div class="empty-state">
+          <div class="empty-hex">⬡</div>
+          <h2>Discover Your Lifestyle Radius</h2>
+          <p>Enter an address to see everything reachable within your daily travel budget.</p>
+        </div>
+      </div>
+
+      <!-- POI Layer Toggles -->
+      <div id="layer-controls" class="hidden">
+        <p class="layer-controls-label">POI Layers</p>
+        <div id="layer-toggles"></div>
+      </div>
+    </div>
+
+    <!-- ── Right Score Dashboard ───────────────────────────── -->
+    <aside id="right-panel" class="hidden">
+
+      <!-- Score Hero -->
+      <div id="score-hero">
+        <div class="score-ring-wrap">
+          <svg id="score-ring-svg" viewBox="0 0 120 120">
+            <!-- Background track -->
+            <circle
+              cx="60" cy="60" r="54"
+              fill="none"
+              stroke="rgba(255,255,255,0.07)"
+              stroke-width="8"
+            />
+            <!-- Score arc — animated via JS -->
+            <circle
+              id="score-arc"
+              cx="60" cy="60" r="54"
+              fill="none"
+              stroke="#6366f1"
+              stroke-width="8"
+              stroke-linecap="round"
+              stroke-dasharray="0 339.292"
+              transform="rotate(-90 60 60)"
+            />
+          </svg>
+          <div class="score-ring-center">
+            <span id="score-value">--</span>
+            <span id="score-grade">--</span>
+          </div>
+        </div>
+        <div id="score-address">--</div>
+        <div id="score-tagline">--</div>
+      </div>
+
+      <!-- Radar Chart -->
+      <div class="chart-card">
+        <h3>Category Radar</h3>
+        <canvas id="radar-chart"></canvas>
+      </div>
+
+      <!-- Category Breakdown -->
+      <div id="category-breakdown"></div>
+
+      <!-- Save for comparison -->
+      <button id="btn-pin" class="btn-secondary" disabled>
+        📍 Save for Comparison
+      </button>
+
+    </aside>
+
+  </div><!-- /#main-layout -->
+
+  <!-- ══ Comparison Bar ═══════════════════════════════════════ -->
+  <div id="compare-bar" class="hidden">
+    <div id="compare-slots"></div>
+    <button id="btn-clear-compare">Clear All</button>
+  </div>
+
+</div><!-- /#app -->
+
+<!-- ══ Loading Overlay ═══════════════════════════════════════ -->
+<div id="loading-overlay" class="hidden">
+  <div class="loading-spinner"></div>
+  <p id="loading-text">Analyzing…</p>
+</div>
+
+<!-- ══ Scripts ═══════════════════════════════════════════════ -->
+<!-- Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+<!-- App Modules (order matters — no bundler) -->
+<script src="js/config.js"></script>
+<script src="js/geocoder.js"></script>
+<script src="js/isochrone.js"></script>
+<script src="js/overpass.js"></script>
+<script src="js/scorer.js"></script>
+<script src="js/map.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/compare.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
