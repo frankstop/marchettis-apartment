@@ -4,7 +4,12 @@
  */
 
 const CONFIG = {
-  GEOAPIFY_API_KEY: 'REDACTED_GEOAPIFY_KEY',
+  // Key is loaded from js/config.local.js (gitignored) at runtime.
+  // See js/config.local.TEMPLATE.js for setup instructions.
+  GEOAPIFY_API_KEY: (typeof window !== 'undefined' && window.GEOAPIFY_KEY_OVERRIDE)
+    ? window.GEOAPIFY_KEY_OVERRIDE
+    : '',
+
   DEFAULT_TRAVEL_TIME: 30,     // minutes
   DEFAULT_TRAVEL_MODE: 'walk',
   MAX_COMPARE_LOCATIONS: 4,
