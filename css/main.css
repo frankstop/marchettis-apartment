@@ -1039,13 +1039,13 @@ input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; transform: 
 /* ── Utility ─────────────────────────────────────────────── */
 .hidden { display: none !important; }
 
-/* ── Bright Theme ────────────────────────────────────────── */
+/* ── Bright Theme Overrides ──────────────────────────────── */
 [data-theme="light"] {
-  --bg-0:       #f8fafc;
-  --bg-1:       #f1f5f9;
+  --bg-0:       #e2e8f0;
+  --bg-1:       #f8fafc;
   --bg-2:       #ffffff;
   --bg-3:       #ffffff;
-  --glass:      rgba(0, 0, 0, 0.04);
+  --glass:      rgba(0, 0, 0, 0.02);
   --glass-border: rgba(0, 0, 0, 0.08);
   --accent:     #4f46e5;
   --accent-dim: #4338ca;
@@ -1057,24 +1057,71 @@ input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; transform: 
   --text-0:     #0f172a;
   --text-1:     #334155;
   --text-2:     #64748b;
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.05);
+  --shadow-md:  0 8px 32px rgba(0,0,0,0.08);
+  --shadow-lg:  0 24px 64px rgba(0,0,0,0.12);
 }
 
-[data-theme="light"] #app-header { background: rgba(255, 255, 255, 0.95); }
-[data-theme="light"] #map-empty-overlay { background: radial-gradient(ellipse at center, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 100%); }
-[data-theme="light"] #layer-controls { background: rgba(255, 255, 255, 0.9); }
-[data-theme="light"] .leaflet-control-zoom a { background: rgba(255, 255, 255, 0.9) !important; border-color: rgba(0,0,0,0.1) !important; color: #333 !important; }
-[data-theme="light"] .leaflet-control-zoom a:hover { background: #f8fafc !important; }
-[data-theme="light"] .leaflet-control-attribution { background: rgba(255,255,255,0.7) !important; color: rgba(0,0,0,0.5) !important; }
-[data-theme="light"] .leaflet-control-attribution a { color: rgba(0,0,0,0.7) !important; }
-[data-theme="light"] #drop-pin-hint { background: rgba(255, 255, 255, 0.88); }
-[data-theme="light"] #compare-bar { background: rgba(248, 250, 252, 0.97); }
-[data-theme="light"] .btn-primary { color: #fff; }
+/* Base */
+[data-theme="light"] body { background: var(--bg-1); }
 
+/* Header */
+[data-theme="light"] #app-header { background: rgba(255, 255, 255, 0.9); border-bottom: 1px solid var(--glass-border); box-shadow: var(--shadow-sm); }
+[data-theme="light"] .header-hex { background: linear-gradient(135deg, var(--accent), #8b5cf6); color: #fff; }
+
+/* Panels & Scrolling */
+[data-theme="light"] #left-panel, [data-theme="light"] #right-panel { background: var(--bg-2); border-color: var(--glass-border); box-shadow: 2px 0 12px rgba(0,0,0,0.02); }
+[data-theme="light"] #left-panel::-webkit-scrollbar-thumb, [data-theme="light"] #right-panel::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+
+/* Inputs & Controls */
+[data-theme="light"] .autocomplete-item { border-bottom: 1px solid rgba(0,0,0,0.04); }
+[data-theme="light"] .autocomplete-item:hover { background: rgba(79, 70, 229, 0.08); }
+[data-theme="light"] input[type="range"] { background: rgba(0,0,0,0.1); }
+[data-theme="light"] input[type="range"]::-webkit-slider-thumb { border: 2px solid #fff; box-shadow: 0 0 6px rgba(79, 70, 229, 0.4); }
+
+/* Buttons */
+[data-theme="light"] .btn-primary { color: #fff; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3); }
+[data-theme="light"] .btn-primary::after { background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%); }
+[data-theme="light"] .btn-secondary { background: #fff; border: 1px solid var(--glass-border); box-shadow: var(--shadow-sm); }
+[data-theme="light"] .btn-secondary:hover { background: #f8fafc; border-color: rgba(79,70,229,0.3); }
+[data-theme="light"] .icon-btn:hover { background: rgba(0,0,0,0.06); }
+
+/* Pills */
+[data-theme="light"] .mode-pill { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+[data-theme="light"] .mode-pill:hover { background: #f8fafc; border-color: rgba(79,70,229,0.3); }
+[data-theme="light"] .mode-pill.active { background: rgba(79,70,229,0.08); border-color: var(--accent); color: var(--accent); }
+
+/* Map Overlays */
+[data-theme="light"] #map-empty-overlay { background: radial-gradient(ellipse at center, rgba(255,255,255,0.85) 0%, rgba(241,245,249,0.8) 100%); }
+[data-theme="light"] .empty-hex { background: linear-gradient(135deg, rgba(79,70,229,0.15), rgba(139,92,246,0.15)); }
+[data-theme="light"] #layer-controls, [data-theme="light"] #drop-pin-hint { background: rgba(255, 255, 255, 0.95); border: 1px solid var(--glass-border); box-shadow: var(--shadow-md); color: var(--text-0); }
+
+/* Map Native Controls */
+[data-theme="light"] .leaflet-control-zoom a { background: #fff !important; color: #333 !important; border-color: rgba(0,0,0,0.1) !important; }
+[data-theme="light"] .leaflet-control-zoom a:hover { background: #f1f5f9 !important; }
+[data-theme="light"] .leaflet-control-attribution { background: rgba(255,255,255,0.8) !important; color: rgba(0,0,0,0.6) !important; }
+[data-theme="light"] .leaflet-control-attribution a { color: rgba(0,0,0,0.8) !important; }
+
+/* Dashboard Elements */
+[data-theme="light"] #score-hero { background: linear-gradient(180deg, rgba(79,70,229,0.05) 0%, transparent 100%); }
+[data-theme="light"] #score-ring-svg circle:first-child { stroke: rgba(0,0,0,0.08) !important; }
+[data-theme="light"] .cat-bar-track { background: rgba(0,0,0,0.08); }
+[data-theme="light"] .subcat-chip { background: #fff; border: 1px solid var(--glass-border); color: var(--text-1); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+[data-theme="light"] .subcat-name { color: var(--text-2); }
+[data-theme="light"] .subcat-count { color: var(--text-0); }
+
+/* Compare UI */
+[data-theme="light"] #compare-bar { background: rgba(255, 255, 255, 0.95); box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+[data-theme="light"] .cmp-card { background: #f8fafc; border: 1px solid var(--glass-border); box-shadow: var(--shadow-sm); }
+[data-theme="light"] .cmp-col.cmp-best { background: rgba(79,70,229,0.04); }
+[data-theme="light"] .cmp-best-badge { background: rgba(79,70,229,0.1); color: var(--accent); border-color: rgba(79,70,229,0.25); }
+[data-theme="light"] .cmp-cat-bar-track { background: rgba(0,0,0,0.06); }
+
+/* Settings Dropdown */
 .settings-wrap {
   position: relative;
   display: inline-block;
 }
-
 #settings-dropdown {
   position: absolute;
   top: calc(100% + 8px);
