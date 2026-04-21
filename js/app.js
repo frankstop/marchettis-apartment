@@ -85,6 +85,33 @@ document.addEventListener('DOMContentLoaded', function() {
   UI.buildTravelModes();
   UI.buildWeightControls(AppState.weights);
 
+  // ── Theme Management ──────────────────────────────────────────
+  var btnSettings = document.getElementById('btn-settings');
+  var settingsDropdown = document.getElementById('settings-dropdown');
+  var themeSelector = document.getElementById('theme-selector');
+
+  var savedTheme = localStorage.getItem('marchetti_theme');
+  if (savedTheme) {
+    document.body.setAttribute('data-theme', savedTheme);
+    themeSelector.value = savedTheme;
+  }
+
+  btnSettings.addEventListener('click', function(e) {
+    e.stopPropagation();
+    settingsDropdown.classList.toggle('hidden');
+  });
+  document.addEventListener('click', function(e) {
+    if (!settingsDropdown.contains(e.target) && e.target !== btnSettings) {
+      settingsDropdown.classList.add('hidden');
+    }
+  });
+
+  themeSelector.addEventListener('change', function(e) {
+    var theme = e.target.value;
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('marchetti_theme', theme);
+  });
+
   // ── Drop-pin: click on map to set location ────────────────────
   MapController.onDropPin = async function(lat, lon) {
     try {

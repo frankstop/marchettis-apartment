@@ -6,13 +6,23 @@
   <title>Marchetti's Apartment — Proximity Intelligence Platform</title>
   <meta name="description" content="Evaluate housing locations based on what you can realistically access within your daily travel budget. Powered by real travel-time isochrones and live points-of-interest data.">
 
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RSVR6Y389R"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-RSVR6Y389R');
+  </script>
+
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
   <!-- Design System -->
   <link rel="stylesheet" href="css/main.css">
 </head>
-<body>
+<body data-theme="light">
 
 <div id="app">
 
@@ -29,6 +39,16 @@
       <button id="btn-compare" class="hidden" title="Compare saved locations">
         📍 Compare (<span id="compare-count">0</span>)
       </button>
+      <div class="settings-wrap">
+        <button id="btn-settings" class="icon-btn" title="Settings">⚙️</button>
+        <div id="settings-dropdown" class="hidden">
+          <p class="section-label" style="margin-bottom:8px">Theme</p>
+          <select id="theme-selector">
+            <option value="light">Bright Mode</option>
+            <option value="dark">Dark Mode</option>
+          </select>
+        </div>
+      </div>
     </div>
   </header>
 

@@ -27,9 +27,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Inject Geoapify API key from secret
-        # Creates config.local.js at deploy time — never stored in the repo
+        # Replaces the placeholder in config.js directly — no separate file created
         run: |
-          echo "window.GEOAPIFY_KEY_OVERRIDE='${{ secrets.GEOAPIFY_KEY }}';" > js/config.local.js
+          sed -i "s/GEOAPIFY_KEY_OVERRIDE.*$/GEOAPIFY_KEY_OVERRIDE = '${{ secrets.GEOAPIFY_KEY }}';/" js/config.local.js
+          # Also remove config.local.js from the deployed artifact (key goes inline)
+          sed -i "s|window.GEOAPIFY_KEY_OVERRIDE.*|window.GEOAPIFY_KEY_OVERRIDE = '${{ secrets.GEOAPIFY_KEY }}';|" js/config.local.js
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v4
